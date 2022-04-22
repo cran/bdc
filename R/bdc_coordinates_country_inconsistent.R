@@ -8,7 +8,12 @@
 #' @family prefilter
 #' @param data data.frame. Containing longitude and latitude. Coordinates must
 #' be expressed in decimal degrees and WGS84.
-#' @param country_name character string. Name of the country to considered.
+#' @param country_name character string. Name of the country or countries to be
+#' considered.
+#' @param country character string. The column name with the country assignment
+#' of each record. It is 
+#' recommended use a column with corrected and homogenized country names.
+#' Default = "country_suggested".
 #' @param lat character string. The column name with the latitude coordinates.
 #' Default = “decimallatitude”.
 #' @param lon character string. The column name with the longitude coordinates.
@@ -16,13 +21,15 @@
 #' @param dist numeric. The distance in decimal degrees used to created a buffer
 #' around the country. Default = 0.1 (~11 km at the equator).
 #'
-#' @details The distance informed in the argument 'dist' is used to create a
+#' @details Multiple countries can be informed, but they are tested separately. 
+#' The distance reported in the argument 'dist' is used to create a
 #' buffer around the reference country. Records within the reference country
 #' or at a specified distance from the coastline of the reference country
 #' (i.e., records within the buffer) are flagged as valid (TRUE). Note that
 #' records within the buffer but in other countries are flagged as invalid
-#' (FALSE).
-#'
+#' (FALSE). Records with invalid (e.g., NA or empty) and out-of-range
+#' coordinates are not tested and returned as TRUE.
+#' 
 #' @return A data.frame containing the column
 #' '.coordinates_country_inconsistent'. Compliant (TRUE) if coordinates fall
 #' within the boundaries plus a specified distance (if 'dist' is supplied) of
@@ -38,13 +45,15 @@
 #' @examples
 #' \dontrun{
 #' x <- data.frame(
-#'   decimalLongitude = c(-40.6003, -39.6, -20.5243, NA),
-#'   decimalLatitude = c(19.9358, -13.016667, NA, "")
-#'   )
-#'   
+#'   country = c("Brazil", "Brazil", "Bolivia", "Argentina", "Peru"),
+#'   decimalLongitude = c(-40.6003, -39.6, -77.689288, NA, -76.352930),
+#'   decimalLatitude = c(-19.9358, -13.016667, -20.5243, -35.345940, -11.851872)
+#' )
+#' 
 #' bdc_coordinates_country_inconsistent(
 #'   data = x,
-#'   country_name = "Brazil",
+#'   country_name = c("Brazil", "Peru", "Argentina"),
+#'   country = "country",
 #'   lon = "decimalLongitude",
 #'   lat = "decimalLatitude",
 #'   dist = 0.1 
@@ -53,6 +62,7 @@
 bdc_coordinates_country_inconsistent <-
   function(data,
            country_name,
+           country = "country_suggested",
            lat = "decimalLatitude",
            lon = "decimalLongitude",
            dist = 0.1) {
@@ -64,7 +74,7 @@ bdc_coordinates_country_inconsistent <-
 
     df <-
       data %>%
-      dplyr::select(.data[[lon]], .data[[lat]]) %>%
+      dplyr::select(.data[[lon]], .data[[lat]], .data[[country]]) %>%
       dplyr::mutate(id = 1:nrow(data))
 
     # identifying empty or out-of-range coordinates
@@ -148,19 +158,33 @@ bdc_coordinates_country_inconsistent <-
     names_to_join <-
       ext_country %>%
       dplyr::select(id, name_long)
+    
+    data_to_join <- dplyr::full_join(data_sp, names_to_join, by = "id")
+    
+    data_to_join$.coordinates_country_inconsistent <- FALSE
 
+    for(i in 1:length(country_name)){
+      flt <- which(data_to_join[[country]]==country_name[[i]])
+      data_to_join[flt, ".coordinates_country_inconsistent"] <- data_to_join[flt, ] %>% 
+        dplyr::mutate(
+          .coordinates_country_inconsistent =
+            dplyr::case_when(
+              (points_in_buf == TRUE & is.na(name_long)) ~ TRUE,
+              (points_in_buf == FALSE) ~ FALSE,
+              (points_in_buf == TRUE &
+                 name_long != country_name[i]) ~ FALSE,
+              (points_in_buf == TRUE & name_long == country_name[i]) ~ TRUE
+            )
+        ) %>% 
+        dplyr::pull(.coordinates_country_inconsistent)
+    }
+    rm(flt)
+    
+    # Assign TRUE to those lines without country information
+    data_to_join$.coordinates_country_inconsistent[is.na(data_to_join[[country]])] <- TRUE
+    
     data_to_join <-
-      dplyr::full_join(data_sp, names_to_join, by = "id") %>%
-      dplyr::mutate(
-        .coordinates_country_inconsistent =
-          dplyr::case_when(
-            (points_in_buf == TRUE & is.na(name_long)) ~ TRUE,
-            (points_in_buf == FALSE) ~ FALSE,
-            (points_in_buf == TRUE &
-              name_long != country_name) ~ FALSE,
-            (points_in_buf == TRUE & name_long == country_name) ~ TRUE
-          )
-      ) %>%
+      data_to_join %>%
       dplyr::select(id, .coordinates_country_inconsistent)
 
     data_raw <-

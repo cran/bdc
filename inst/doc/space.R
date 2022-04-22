@@ -115,11 +115,12 @@ database <-
 check_space <-
   readr::read_csv(system.file("extdata/outpus_vignettes/03_space_database.csv", package = "bdc"), show_col_types = FALSE)
 
-## ----echo=FALSE, message=FALSE, warning=FALSE---------------------------------
+## ----echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE----------------------
 DT::datatable(
-  check_space, class = 'stripe', extensions = 'FixedColumns',
+  check_space[1:15,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
-    pageLength = 7,
+    pageLength = 5,
     dom = 'Bfrtip',
     scrollX = TRUE,
     fixedColumns = list(leftColumns = 2)
@@ -156,6 +157,7 @@ report <-
 ## ----echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE----------------------
 DT::datatable(
   report, class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     # pageLength = 5,
     dom = 'Bfrtip',
@@ -165,10 +167,11 @@ DT::datatable(
 )
 
 ## ---- eval=FALSE--------------------------------------------------------------
+#  figures <-
 #  bdc_create_figures(data = check_space,
 #                     database_id = "database_id",
 #                     workflow_step = "space",
-#                     save_figures = FALSE)
+#                     save_figures = TRUE)
 #  
 #  # Check figures using
 #  figures$.rou
@@ -180,7 +183,7 @@ DT::datatable(
 #   bdc_filter_out_flags(data = ., col_to_remove = "all")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  # use qs::qread() to save the database in a compressed format
+#  # use qs::qsave() to save the database in a compressed format and then qs:qread() to load the database
 #  check_space %>%
 #   readr::write_csv(.,
 #              here::here("Output", "Intermediate", "03_space_database.csv"))

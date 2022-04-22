@@ -20,9 +20,10 @@ library(bdc)
 database <-
   readr::read_csv(system.file("extdata/outpus_vignettes/03_space_database.csv", package = "bdc"), show_col_types = FALSE)
 
-## ----echo=F, message=FALSE, warning=FALSE-------------------------------------
+## ----echo=F, message=FALSE, warning=FALSE, eval=TRUE--------------------------
 DT::datatable(
-  database, class = 'stripe', extensions = 'FixedColumns',
+  database[1:15,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     pageLength = 3,
     dom = 'Bfrtip',
@@ -68,6 +69,7 @@ report <-
 ## ----echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE----------------------
 DT::datatable(
   report, class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     # pageLength = 5,
     dom = 'Bfrtip',
@@ -77,6 +79,7 @@ DT::datatable(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
+#  figures <-
 #  bdc_create_figures(data = check_time,
 #                     database_id = "database_id",
 #                     workflow_step = "time",
@@ -88,7 +91,7 @@ DT::datatable(
 ## ----eval=FALSE---------------------------------------------------------------
 #  check_time %>%
 #    readr::write_csv(.,
-#              here::here("Output", "Intermediate", "04_time_raw_database.csv"))
+#              here::here("Output", "Intermediate", "04_time_database.csv"))
 
 ## -----------------------------------------------------------------------------
 output <-
@@ -97,23 +100,19 @@ output <-
   bdc_filter_out_flags(data = ., col_to_remove = "all")
 
 ## ----eval=FALSE---------------------------------------------------------------
+#  # use qs::qsave() to save the database in a compressed format and then qs:qread() to load the database
 #  output %>%
 #    readr::write_csv(.,
-#              here::here("Output", "Intermediate", "04_time_clean_database.csv"))
+#              here::here("Output", "Intermediate", "05_cleaned_database.csv"))
 
 ## ----echo=FALSE, eval=TRUE----------------------------------------------------
 output <-
-  readr::read_csv(
-    system.file(
-      "extdata/outpus_vignettes/04_time_clean_database.csv",
-      package = "bdc"
-    ),
-    show_col_types = FALSE
-  )
+    readr::read_csv(system.file("extdata/outpus_vignettes/05_cleaned_database.csv", package = "bdc"), show_col_types = FALSE)
 
-## ----echo=FALSE, message=FALSE, warning=FALSE---------------------------------
+## ----echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE----------------------
 DT::datatable(
-  output, class = 'stripe', extensions = 'FixedColumns',
+  output[1:15,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     pageLength = 3,
     dom = 'Bfrtip',

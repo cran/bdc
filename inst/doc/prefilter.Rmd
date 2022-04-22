@@ -32,7 +32,7 @@ Large and heterogeneous datasets may contain thousands of records missing spatia
 
 #### **Installation**
 
-Check [**here**](https://brunobrr.github.io/bdc/) how to install the bdc package
+Check [**here**](https://brunobrr.github.io/bdc/#installation) how to install the bdc package.
 
 #### **Reading the database**
 
@@ -53,7 +53,8 @@ database <-
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 DT::datatable(
-  database, class = 'stripe', extensions = 'FixedColumns',
+  database[1:15,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     pageLength = 5,
     dom = 'Bfrtip',
@@ -129,7 +130,7 @@ check_pf <- bdc_basisOfRecords_notStandard(
 
 #> bdc_basisOfRecords_notStandard:
 #> Flagged 0 of the following specific nature:
-#>  character(0) 
+#>  character(0)
 #> One column was added to the database.
 ```
 
@@ -159,13 +160,13 @@ check_pf <- bdc_country_standardized(
 )
 
 #> Standardizing country names
-#> 
+#>
 #> country found: Bolivia
 #> country found: Brazil
-#>   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=00s  
-#>   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=00s  
-#>   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=00s  
-#> 
+#>   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=00s
+#>   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=00s
+#>   |++++++++++++++++++++++++++++++++++++++++++++++++++| 100% elapsed=00s
+#>
 #> bdc_country_standardized:
 #> The country names of 65 records were standardized.
 #> Two columns ('country_suggested' and 'countryCode') were added to the database.
@@ -190,8 +191,8 @@ check_pf <-
   )
 
 #> Correcting latitude and longitude transposed
-#> 
-#> 15 ocurrences will be tested
+#>
+#> 15 occurrences will be tested
 #> Processing occurrences from: BR (15)
 #> No latitude and longitude were transposed
 ```
@@ -205,6 +206,7 @@ check_pf <-
   bdc_coordinates_country_inconsistent(
     data = check_pf,
     country_name = "Brazil",
+    country = "country_suggested",
     lon = "decimalLongitude",
     lat = "decimalLatitude",
     dist = 0.1 # in decimal degrees (~11 km at the equator)
@@ -212,7 +214,7 @@ check_pf <-
 
 #> dist is assumed to be in decimal degrees (arc_degrees).
 #> although coordinates are longitude/latitude, st_intersection assumes that they are planar
-#> 
+#>
 #> bdc_coordinates_country_inconsistent:
 #> Flagged 15 records.
 #> One column was added to the database.
@@ -231,7 +233,7 @@ xyFromLocality <- bdc_coordinates_from_locality(
   save_outputs = FALSE
 )
 
-#> bdc_coordinates_from_locality 
+#> bdc_coordinates_from_locality
 #> Found 38 records missing or with invalid coordinates but with potentially useful information on locality
 ```
 
@@ -247,9 +249,10 @@ check_pf <- bdc_summary_col(data = check_pf)
 #> One column was added to the database.
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 # DT::datatable(
 #   check_pf, class = 'stripe', extensions = 'FixedColumns',
+#   rownames = FALSE,
 #   options = list(
 #     pageLength = 3,
 #     dom = 'Bfrtip',
@@ -274,7 +277,7 @@ report
 ```{r eval=TRUE, echo=FALSE}
 report <-
   readr::read_csv(
-    system.file("extdata/outpus_vignettes/01_Report_Prefilter.csv", 
+    system.file("extdata/outpus_vignettes/01_Report_Prefilter.csv",
                 package = "bdc"),
     show_col_types = FALSE
   )
@@ -283,6 +286,7 @@ report <-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 DT::datatable(
   report, class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     # pageLength = 5,
     dom = 'Bfrtip',
@@ -297,10 +301,10 @@ DT::datatable(
 Here we create figures (bar plots and maps) to make the interpretation of the results of data quality tests easier. See some examples below. Figures can be automatically saved if `save_figures = TRUE.`
 
 ```{r eval=FALSE}
-figures <- 
+figures <-
 bdc_create_figures(data = check_pf,
                    database_id = "database_id",
-                   workflow_step = "prefilter", 
+                   workflow_step = "prefilter",
                    save_figures = FALSE)
 
 # Check figures using
@@ -332,9 +336,10 @@ output <-
 
 #### **Saving the database**
 
-You can use [qs::qread()]{.ul} instead of write_csv to save a large database in a compressed format
+You can use [qs::qsave()]{.underline} instead of write_csv to save a large database in a compressed format.
 
 ```{r eval=FALSE}
+# use qs::qsave() to save the database in a compressed format and then qs:qread() to load the database
 output %>%
   readr::write_csv(.,
             here::here("Output", "Intermediate", "01_prefilter_database.csv"))

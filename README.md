@@ -3,12 +3,20 @@
 
 # ***bdc*** <a href='https://github.com/brunobrr/bdc'><img src="https://raw.githubusercontent.com/brunobrr/bdc/master/man/figures/logo.png" align="right" width="155"/></a>
 
-## **An R toolkit for standardizing, integrating, and cleaning biodiversity data**
+## **A toolkit for standardizing, integrating, and cleaning biodiversity data**
 
 <!-- badges: start -->
 
-[![License](https://img.shields.io/badge/license-GPL%20(%3E=%203)-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/bdc)](https://CRAN.R-project.org/package=bdc)
+[![downloads](https://cranlogs.r-pkg.org/badges/grand-total/bdc)](https://cranlogs.r-pkg.org:443/badges/grand-total/bdc)
+[![rstudio mirror
+downloads](https://cranlogs.r-pkg.org/badges/bdc)](https://cranlogs.r-pkg.org:443/badges/bdc)
 [![R-CMD-check](https://github.com/brunobrr/bdc/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/brunobrr/bdc/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/brunobrr/bdc/branch/master/graph/badge.svg?token=9AUF86G9LJ)](https://app.codecov.io/gh/brunobrr/bdc)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6450390.svg)](https://doi.org/10.5281/zenodo.6450390)
+[![License](https://img.shields.io/badge/license-GPL%20(%3E=%203)-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-3.0.html)
 
 <!-- badges: end -->
 
@@ -67,7 +75,7 @@ standardize country names).
 -   `bdc_coordinates_empty()` Identification of records lacking
     information on latitude or longitude
 -   `bdc_coordinates_outOfRange()` Identification of records with
-    out-of-range coordinates (latitude > 90 or -90; longitude >180 or
+    out-of-range coordinates (latitude \> 90 or -90; longitude \>180 or
     -180)
 -   `bdc_basisOfRecords_notStandard()` Identification of records from
     doubtful sources (e.g., fossil or machine observation) impossible to
@@ -154,7 +162,14 @@ ii) figures, and iii) data-quality reports.
 
 #### **Installation**
 
-You can install the released version of *bdc* from
+You can install *bdc* from CRAN
+
+``` r
+install.packages("bdc")
+library(taxadb)
+```
+
+or the development version from
 [GitHub](https://github.com/brunobrr/bdc) using:
 
 ``` r
@@ -162,7 +177,7 @@ install.packages("remotes")
 remotes::install_github("brunobrr/bdc")
 ```
 
-And load the package with:
+Load the package with:
 
 ``` r
 library(bdc)
@@ -178,3 +193,11 @@ detailed explanation on each module.
 > If you encounter a clear bug, please file an issue
 > [**here**](https://github.com/brunobrr/bdc/issues). For questions or
 > suggestion, please send us a email (ribeiro.brr@gmail.com).
+
+#### **Citation**
+
+Ribeiro, BR; Velazco, SJE; Guidoni-Martins, K; Tessarolo, G; Jardim,
+Lucas; Bachman, SP; Loyola, R (2022). bdc: A toolkit for standardizing,
+integrating, and cleaning biodiversity data. Methods in Ecology and
+Evolution.
+[doi.org/10.1111/2041-210X.13868](https://doi.org/10.1111/2041-210X.13868)

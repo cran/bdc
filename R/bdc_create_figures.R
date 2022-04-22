@@ -77,6 +77,8 @@ bdc_create_figures <-
       check_require_cran("readr")
       check_require_cran("rworldmap")
       check_require_cran("ggplot2")
+      check_require_cran("hexbin")
+      
     })
 
     match.arg(
@@ -84,6 +86,18 @@ bdc_create_figures <-
       choices = c("prefilter", "space", "time")
     )
 
+    temp <- data %>% dplyr::select(tidyselect::starts_with("."))
+    
+    if (all((colSums(temp, na.rm = TRUE) - nrow(temp)) == 0)) {
+      message("Figures were not created.\nNo records flagged as 'FALSE' in columns starting with '.'")
+    }
+    
+    if (ncol(temp) == 0) {
+      message(
+        "Figures were not created.\nAt least one column 'starting with '.' containing results of data-quality tests must be provided"
+      )
+    }
+    
     bdc_create_dir()
 
     # Formatting y axis of ggplot bar
@@ -312,7 +326,7 @@ bdc_create_figures <-
       }
 
       if (length(w_bar) != 0) {
-        w <- which(colSums(!data[{{ w_bar }}]) == 0)
+        w <- which(colSums(!data[{{ w_bar }}], na.rm = TRUE) == 0)
 
         if (length(w) != 0) {
           message(
@@ -322,7 +336,7 @@ bdc_create_figures <-
           w_bar <- w_bar[-w]
         }
 
-        if (nrow(n_record_database) != 1) {
+        if (nrow(n_record_database) != 1 & length(w_bar) != 0) {
           for (i in 1:length(w_bar)) {
             bp <- 
             create_barplot_database(
@@ -338,17 +352,17 @@ bdc_create_figures <-
         }
         
         # summary of all tests
-        
-        bp_all <- 
-        create_barplot_all_tests(
-          data = data,
-          column_to_map = "summary_all_tests",
-          workflow_step = workflow_step
-        )
-        
-        bp_all_list <- list(bp_all)
-        names(bp_all_list) <- "summary_all_tests"
-        res <- c(res, bp_all_list)
+        if (nrow(n_record_database) != 1 & length(w_bar) != 0) {
+          bp_all <-
+            create_barplot_all_tests(
+              data = data,
+              column_to_map = "summary_all_tests",
+              workflow_step = workflow_step)
+          
+          bp_all_list <- list(bp_all)
+          names(bp_all_list) <- "summary_all_tests"
+          res <- c(res, bp_all_list)
+        }
         
       }
 
@@ -423,7 +437,7 @@ bdc_create_figures <-
 
       # Create maps of transposed and corrected coordinates
       if (length(w_tranposed) == 0 & workflow_step == "prefilter") {
-        message("file 'Output/Check/01_coordinates_transposed.csv' not found")
+        message("file 'Output/Check/01_coordinates_transposed.csv' not found. Maps showing the results of bdc_coordinates_transposed test will not be created")
       }
 
       if (length(w_tranposed) != 0) {
@@ -488,23 +502,32 @@ bdc_create_figures <-
       }
     }) # suppresswarning
 
-    if (save_figures){
-    message("Check figures in ", here::here("Output", "Figures"))
-      
-      for (i in seq_along(res)){
+    if (save_figures == TRUE){
+   
+      for (i in seq_along(res)) {
         column_to_map <- names(res)[i]
-        ggplot2::ggsave(paste("Output/", "Figures/", workflow_step, "_",
-                              column_to_map, "_", "BAR", ".png",
-                              sep = ""
-        ),
-        res[[i]],
-        dpi = 300,
-        width = 6,
-        height = 3,
-        units = "cm",
-        scale = 5
+        ggplot2::ggsave(
+          paste(
+            here::here("Output", "Figures"),
+            "/",
+            workflow_step,
+            "_",
+            column_to_map,
+            "_",
+            "BAR",
+            ".png",
+            sep = ""
+          ),
+          res[[i]],
+          dpi = 300,
+          width = 6,
+          height = 3,
+          units = "cm",
+          scale = 5
         )
       }
+      
+      message("Check figures in ", here::here("Output", "Figures"))
     }
     
     return(res)

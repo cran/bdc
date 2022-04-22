@@ -26,6 +26,18 @@ database <-
     show_col_types = FALSE
   )
 
+## ----echo=F, message=FALSE, warning=FALSE, eval=TRUE--------------------------
+DT::datatable(
+  database[1:15,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
+  options = list(
+    pageLength = 3,
+    dom = 'Bfrtip',
+    scrollX = TRUE,
+    fixedColumns = list(leftColumns = 2)
+  )
+)
+
 ## ----eval=F, echo=T-----------------------------------------------------------
 #  parse_names <-
 #    bdc_clean_names(sci_names = database$scientificName, save_outputs = FALSE)
@@ -47,9 +59,10 @@ parse_names <-
     show_col_types = FALSE
   )
 
-## ----echo=F, message=FALSE, warning=FALSE-------------------------------------
+## ----echo=F, message=FALSE, warning=FALSE, eval=TRUE--------------------------
 DT::datatable(
   parse_names[60:75,],
+  rownames = FALSE,
   class = 'stripe',
   extensions = 'FixedColumns',
   options = list(
@@ -95,7 +108,8 @@ query_names <-
   )
 
 DT::datatable(
-  query_names[1:30,], class = 'stripe', extensions = 'FixedColumns',
+  query_names[1:20,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     pageLength = 5,
     dom = 'Bfrtip',
@@ -130,6 +144,7 @@ report <-
 ## ----echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE----------------------
 DT::datatable(
   report, class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     # pageLength = 5,
     dom = 'Bfrtip',
@@ -158,6 +173,7 @@ DT::datatable(
 #   )
 
 ## ----eval=FALSE---------------------------------------------------------------
+#  # use qs::qsave() to save the database in a compressed format and then qs:qread() to load the database
 #  database %>%
 #    readr::write_csv(.,
 #              here::here("Output", "Intermediate", "02_taxonomy_database.csv"))

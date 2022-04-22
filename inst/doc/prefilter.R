@@ -27,7 +27,8 @@ database <-
 
 ## ----echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE----------------------
 DT::datatable(
-  database, class = 'stripe', extensions = 'FixedColumns',
+  database[1:15,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     pageLength = 5,
     dom = 'Bfrtip',
@@ -126,7 +127,7 @@ DT::datatable(
 #  
 #  #> Correcting latitude and longitude transposed
 #  #>
-#  #> 15 ocurrences will be tested
+#  #> 15 occurrences will be tested
 #  #> Processing occurrences from: BR (15)
 #  #> No latitude and longitude were transposed
 
@@ -135,6 +136,7 @@ DT::datatable(
 #    bdc_coordinates_country_inconsistent(
 #      data = check_pf,
 #      country_name = "Brazil",
+#      country = "country_suggested",
 #      lon = "decimalLongitude",
 #      lat = "decimalLatitude",
 #      dist = 0.1 # in decimal degrees (~11 km at the equator)
@@ -166,16 +168,17 @@ DT::datatable(
 #  #> Flagged 65 records.
 #  #> One column was added to the database.
 
-## ----echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE---------------------
-#  # DT::datatable(
-#  #   check_pf, class = 'stripe', extensions = 'FixedColumns',
-#  #   options = list(
-#  #     pageLength = 3,
-#  #     dom = 'Bfrtip',
-#  #     scrollX = TRUE,
-#  #     fixedColumns = list(leftColumns = 2)
-#  #   )
-#  # )
+## ----echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE----------------------
+# DT::datatable(
+#   check_pf, class = 'stripe', extensions = 'FixedColumns',
+#   rownames = FALSE,
+#   options = list(
+#     pageLength = 3,
+#     dom = 'Bfrtip',
+#     scrollX = TRUE,
+#     fixedColumns = list(leftColumns = 2)
+#   )
+# )
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  report <-
@@ -189,7 +192,7 @@ DT::datatable(
 ## ----eval=TRUE, echo=FALSE----------------------------------------------------
 report <-
   readr::read_csv(
-    system.file("extdata/outpus_vignettes/01_Report_Prefilter.csv", 
+    system.file("extdata/outpus_vignettes/01_Report_Prefilter.csv",
                 package = "bdc"),
     show_col_types = FALSE
   )
@@ -197,6 +200,7 @@ report <-
 ## ----echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE----------------------
 DT::datatable(
   report, class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     # pageLength = 5,
     dom = 'Bfrtip',
@@ -226,6 +230,7 @@ DT::datatable(
 #  #> .scientificName_empty, .coordinates_empty, .coordinates_outOfRange, .basisOfRecords_notStandard, .coordinates_country_inconsistent, .summary
 
 ## ----eval=FALSE---------------------------------------------------------------
+#  # use qs::qsave() to save the database in a compressed format and then qs:qread() to load the database
 #  output %>%
 #    readr::write_csv(.,
 #              here::here("Output", "Intermediate", "01_prefilter_database.csv"))

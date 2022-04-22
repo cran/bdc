@@ -57,7 +57,7 @@ Note that some taxonomic databases may be *momentarily unavailable* in taxadb. C
 
 #### **Installation**
 
-Check [**here**](https://brunobrr.github.io/bdc/) how to install the bdc package
+Check [**here**](https://brunobrr.github.io/bdc/#installation) how to install the bdc package.
 
 #### **Reading the database**
 
@@ -79,6 +79,19 @@ database <-
   )
 ```
 
+```{r echo=F, message=FALSE, warning=FALSE, eval=TRUE}
+DT::datatable(
+  database[1:15,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
+  options = list(
+    pageLength = 3,
+    dom = 'Bfrtip',
+    scrollX = TRUE,
+    fixedColumns = list(leftColumns = 2)
+  )
+)
+```
+
 #### **Clean and parse species names**
 
 Scientific names improperly formatted usually cannot be matched with valid names. To solve this issue, we developed the *bdc_clean_name* containing functionalities to **unify writing style of scientific names**. This optimize the taxonomic queries by increasing the probability of finding matching names. This tool is used to:
@@ -97,7 +110,7 @@ parse_names <-
 #> >> Terms denoting taxonomic uncertainty were flagged and removed from 1 records.
 #> >> Other issues, capitalizing the first letter of the generic name, replacing empty names by NA, and removing extra spaces, were flagged and corrected or removed from 0 records.
 #> >> Infraspecific terms were flagged and removed from 1 records.
-#> 
+#>
 #> >> Scientific names were cleaned and parsed. Check the results in 'Output/Check/02_clean_names.csv'.
 ```
 
@@ -114,9 +127,10 @@ parse_names <-
 
 An example of *bdc_clean_names* output.
 
-```{r echo=F, message=FALSE, warning=FALSE}
+```{r echo=F, message=FALSE, warning=FALSE, eval=TRUE}
 DT::datatable(
   parse_names[60:75,],
+  rownames = FALSE,
   class = 'stripe',
   extensions = 'FixedColumns',
   options = list(
@@ -159,7 +173,7 @@ query_names <- bdc_query_names_taxadb(
 )
 
 #> A total of 0 NA was/were found in sci_name.
-#> 
+#>
 #> 115 names queried in 3.1 minutes
 ```
 
@@ -173,7 +187,8 @@ query_names <-
   )
 
 DT::datatable(
-  query_names[1:30,], class = 'stripe', extensions = 'FixedColumns',
+  query_names[1:20,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     pageLength = 5,
     dom = 'Bfrtip',
@@ -218,6 +233,7 @@ report <-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 DT::datatable(
   report, class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
   options = list(
     # pageLength = 5,
     dom = 'Bfrtip',
@@ -261,9 +277,10 @@ It is possible to remove records with unresolved or invalid names to get a 'clea
 
 #### **Saving the database**
 
-You can use [qs::qread()]{.ul} instead of write_csv to save a large database in a compressed format.
+You can use [qs::qsave()]{.underline} instead of write_csv to save a large database in a compressed format.
 
 ```{r eval=FALSE}
+# use qs::qsave() to save the database in a compressed format and then qs:qread() to load the database
 database %>%
   readr::write_csv(.,
             here::here("Output", "Intermediate", "02_taxonomy_database.csv"))

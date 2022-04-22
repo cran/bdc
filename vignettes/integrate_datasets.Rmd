@@ -30,6 +30,12 @@ The first step of the *bdc* package handles the harmonization of heterogeneous d
 
 Once standardized, datasets are then integrated into a standardized database having a minimum set of terms required for sharing biodiversity data and metadata across a wide variety of biodiversity applications ([Simple Darwin Core standards](https://dwc.tdwg.org/terms/)).
 
+------------------------------------------------------------------------
+
+We demonstrate the package's usefulness using records on terrestrial plant species occurring in Brazil obtained from nine data aggregators (e.g., GIF, SpeciesLink, SiBBr, iDigBio, among others). The **example datasets** are available at <https://doi.org/10.6084/m9.figshare.19260962> Please, click on "Download all" to obtain all datasets.
+
+Next, copy the path in our computer where the datasets were saved. This path will be used in the Configuration Table (e.g., metadata) to read the datasets and create an i**ntegrated and standardized database.**
+
 <br/>
 
 ⚠️**IMPORTANT:**
@@ -41,11 +47,11 @@ Once standardized, datasets are then integrated into a standardized database hav
 
 #### **Installation**
 
-Check [**here**](https://brunobrr.github.io/bdc/) how to install the bdc package
+Check [**here**](https://brunobrr.github.io/bdc/#installation) how to install the bdc package.
 
 #### **Read the configuration table**
 
-Read an example of the **configuration table**. You can download the table by clicking on the "CSV" button. We demonstrate the usefulness of the package using a database of terrestrial plant species occurring in Brazil.
+Read an example of the **configuration table**. You can download the table by clicking on the "CSV" button. Next, indicate the path to the folder containg the example datasets in the configuration table.
 
 ```{r echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
 metadata <-
@@ -54,13 +60,13 @@ metadata <-
                   show_col_types = FALSE)
 ```
 
-**NOTE:** Remember to change the column "fileName" for the path containing the input files and perform all modifications needed in the configuration table before executing *bdc_standardize_datasets*.
-
 <br/>
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 DT::datatable(
- metadata, class = 'stripe', extensions = c('FixedColumns', 'Buttons'),
+metadata, 
+class = 'stripe', extensions = c('FixedColumns', 'Buttons'),
+rownames = FALSE,
  options = list(
    #dom = 't',
    dom = 'Bfrtip',
@@ -73,7 +79,68 @@ DT::datatable(
 )
 ```
 
+**Changing the path containing the datasets.**
+
+```{r eval=FALSE}
+# Path to the folder containing the example datasets. For instance:
+path <- "C:/Users/myname/Documents/myproject/input_files/"
+
+# Change in the Configuration table the path to the folder in your computer containing the example datasets
+metadata$fileName <-
+  gsub(pattern = "https://raw.githubusercontent.com/brunobrr/bdc/master/inst/extdata/input_files/",
+       replacement = path,
+       x = metadata$fileName)
+```
+
 <br/>
+
+#### **Standardization and integration of datasets**
+
+Now, let's merge the different datasets into a standardized database. Note that the standardized database integrating all dataset can be saved in the folder **"Output/Intermediate" as "00_merged_database"** if `save_database = TRUE` . The database is saved with a **"csv"** or **"qs"** extension, being "qs" a helpful format for quickly saving and reading large databases. "qs" files can be read using the function "qread" from the "qs" package.
+
+```{r message=FALSE, warning=FALSE, eval=FALSE}
+database <-
+bdc_standardize_datasets(metadata = metadata,
+                         format = "csv",
+                         overwrite = TRUE,
+                         save_database = TRUE)
+
+#>  0sStandardizing AT_EPIPHYTES file
+#>  0s 0sStandardizing BIEN file
+#>  0s 0sStandardizing DRYFLOR file
+#>  0s 0sStandardizing GBIF file
+#>  0s 0sStandardizing ICMBIO file
+#>  0s 0sStandardizing IDIGBIO file
+#>  0s 0sStandardizing NEOTROPTREE file
+#>  0s 0sStandardizing SIBBR file
+#>  0s 0sStandardizing SPECIESLINK file
+#>
+#> C:/Users/Bruno R. Ribeiro/Desktop/bdc/Output/Intermediate/00_merged_database.csv was created
+```
+
+```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
+database <-
+  readr::read_csv(system.file("extdata/outpus_vignettes/00_merged_database.csv", package = "bdc"), show_col_types = FALSE)
+```
+
+An example of a standardized database containing the required field to run the *bdc* package.
+
+```{r echo=F, message=FALSE, warning=FALSE, eval=TRUE}
+DT::datatable(
+  database[1:15,], class = 'stripe', extensions = 'FixedColumns',
+  rownames = FALSE,
+  options = list(
+    pageLength = 5,
+    dom = 'Bfrtip',
+    scrollX = TRUE,
+    fixedColumns = list(leftColumns = 2)
+  )
+)
+```
+
+<br/>
+
+⚠️**IMPORTANT:**
 
 The standardized database embodies information on species taxonomy, geolocation, date of collection, and other relevant context information. Each field is classified in three categories according to its importance to run the function: i) **required**, i.e., the minimum information necessary to run the function, ii) **recommended**, i.e., not mandatory but having important details on species records, and iii) **additional**, i.e., information potentially useful for detailed data analyses.
 
@@ -94,58 +161,18 @@ config_description <-
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, eval=TRUE}
 DT::datatable(
- config_description, class = 'stripe', extensions = c('FixedColumns', 'Buttons'),
- options = list(
-   #dom = 't',
-   dom = 'Bfrtip',
-   scrollX = TRUE,
-   pageLength = 5,
-   buttons = c('copy', 'csv', 'print'),
-   fixedColumns = list(leftColumns = 2),
-   editable = 'cell'
- )
-)
-```
-
-#### **Standardization and integration of datasets**
-
-Note that the standardized database integrating all dataset can be saved in the folder **"Output/Intermediate" as "00_merged_database"** if `save_database = TRUE` . The database is saved with a **"csv"** or **"qs"** extension, being "qs" a helpful format for quickly saving and reading large databases. "qs" files can be read using the function "qread" from the "qs" package.
-
-```{r message=FALSE, warning=FALSE, eval=FALSE}
-database <- 
-bdc_standardize_datasets(metadata = metadata,
-                         format = "csv",
-                         overwrite = TRUE, 
-                         save_database = TRUE)
-
-#>  0sStandardizing AT_EPIPHYTES file                  
-#>  0s 0sStandardizing BIEN file              
-#>  0s 0sStandardizing DRYFLOR file                                                         
-#>  0s 0sStandardizing GBIF file       
-#>  0s 0sStandardizing ICMBIO file           
-#>  0s 0sStandardizing IDIGBIO file              
-#>  0s 0sStandardizing NEOTROPTREE file              
-#>  0s 0sStandardizing SIBBR file               
-#>  0s 0sStandardizing SPECIESLINK file
-#>  
-#> C:/Users/Bruno R. Ribeiro/Desktop/bdc/Output/Intermediate/00_merged_database.csv was created
-```
-
-```{r echo=FALSE, eval=TRUE, message=FALSE, warning=FALSE}
-database <-
-  readr::read_csv(system.file("extdata/outpus_vignettes/00_merged_database.csv", package = "bdc"), show_col_types = FALSE)
-```
-
-An example of a standardized database containing the required field to run the *bdc* package.
-
-```{r echo=F, message=FALSE, warning=FALSE}
-DT::datatable(
-  database, class = 'stripe', extensions = 'FixedColumns',
+  config_description,
+  rownames = FALSE,
+  class = 'stripe',
+  extensions = c('FixedColumns', 'Buttons'),
   options = list(
-    pageLength = 7,
+    #dom = 't',
     dom = 'Bfrtip',
     scrollX = TRUE,
-    fixedColumns = list(leftColumns = 2)
+    pageLength = 9,
+    buttons = c('copy', 'csv', 'print'),
+    fixedColumns = list(leftColumns = 2),
+    editable = 'cell'
   )
 )
 ```
