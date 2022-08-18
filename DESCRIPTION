@@ -1,6 +1,6 @@
 Package: bdc
 Title: Biodiversity Data Cleaning
-Version: 1.1.1
+Version: 1.1.2
 Authors@R: c(
     person("Bruno", "Ribeiro", , "ribeiro.brr@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7755-6715")),
@@ -52,7 +52,7 @@ Encoding: UTF-8
 Language: en-gb
 RoxygenNote: 7.1.2
 NeedsCompilation: no
-Packaged: 2022-05-26 16:23:04 UTC; ribei
+Packaged: 2022-08-18 00:12:38 UTC; ribei
 Author: Bruno Ribeiro [aut, cre] (<https://orcid.org/0000-0002-7755-6715>),
   Santiago Velazco [aut] (<https://orcid.org/0000-0002-7527-0967>),
   Karlo Guidoni-Martins [aut] (<https://orcid.org/0000-0002-8458-8467>),
@@ -62,4 +62,4 @@ Author: Bruno Ribeiro [aut, cre] (<https://orcid.org/0000-0002-7755-6715>),
   Rafael Loyola [ctb] (<https://orcid.org/0000-0001-5323-2735>)
 Maintainer: Bruno Ribeiro <ribeiro.brr@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-05-27 08:10:02 UTC
+Date/Publication: 2022-08-18 07:30:14 UTC
