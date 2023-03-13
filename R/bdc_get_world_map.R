@@ -10,44 +10,35 @@
 #' worldmap <- bdc_get_world_map()
 #' }
 bdc_get_world_map <- function() {
-  name_en <- NULL
+  name_long <- english_name <- english_name <- iso2c <- iso_a2 <- geometry <- alpha2 <- alpha3 <- cntr_original2 <- NULL
 
   check_require_cran("rnaturalearth")
   check_require_github("ropensci/rnaturalearthdata")
 
   suppressWarnings({
-    worldmap <- rnaturalearth::ne_countries(scale = "large")
 
-    # Add some iso code to some countries polygons
-    iso2c <- countrycode::countrycode(unique(worldmap$name_en),
-      origin = "country.name.en",
-      destination = "iso2c"
-    )
+    cntr_names <-
+      system.file("extdata/countries_names/country_names.txt", package = "bdc") %>%
+      readr::read_delim(delim = "\t", col_types = readr::cols()) %>%
+      ## FIXME 2022-10-08: There are two cases as "United States".
+      dplyr::mutate(english_name = dplyr::if_else(alpha3 == "USA", "United States of America", english_name)) %>%
+      dplyr::select(english_name, iso2c = alpha2) %>%
+      unique()
 
-    iso3c <- countrycode::countrycode(unique(worldmap$name_en),
-      origin = "country.name.en",
-      destination = "iso3c"
-    )
+    worldmap <-
+      rnaturalearth::ne_countries(scale = "large", returnclass = "sf") %>%
+      ## correct country names to match our database `cntr_names`
+      bdc_reword_countries() %>%
+      dplyr::left_join(cntr_names, by = c("name_long" = "english_name")) %>%
+      ## replace NA on our database with iso names on rnaturalearth (two cases: Namibia and Kosovo).
+      ## NOTE: the iso2c for Namibia is the string "NA".
+      dplyr::mutate(iso2c = if_else(!is.na(iso_a2) & is.na(iso2c), iso_a2, iso2c)) %>%
+      dplyr::select(name_long, iso2c, geometry) %>%
+      ## return SpatialPolygonDataFrame
+      sf::as_Spatial()
 
-    iso <- data.frame(
-      worldmap@data %>%
-        dplyr::select(name_en, tidyselect::starts_with("iso")),
-      iso2c,
-      iso3c
-    )
-
-    filt <- !is.na(iso$iso_a2) & is.na(iso$iso2c)
-    iso$iso2c[filt] <- iso$iso_a2[filt]
-
-    filt <- !is.na(iso$iso_a3) & is.na(iso$iso3c)
-    iso$iso3c[filt] <- iso$iso_a3[filt]
-
-    worldmap@data <- iso
-    is.na(iso) %>% colSums() # number of polygons without isocode
-
-    worldmap@data <-
-      worldmap@data %>%
-      dplyr::select(iso2c, iso3c)
   })
+
   return(worldmap)
+
 }

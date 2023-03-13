@@ -1,3 +1,28 @@
+# bdc 1.1.4
+
+- Adaptation of the databases to the latest version of `{taxadb}`
+  (0.2.0), temporarily discontinuing the `tpl`, `fb` and `iucn`
+  databases (see [here](https://github.com/ropensci/taxadb/commit/593c7856a603c802762829d60acb2a313ad7a6dd)).
+
+- `bdc_query_names_taxadb()` now informs the database provider and its
+  version and does not create Output directory when
+  `export_accepted=FALSE`.
+
+# bdc 1.1.3
+
+- `bdc_standardize_datasets` now throws an error when dataset names defined in the metadata file are not unique.
+- Fix minor bug in `bdc_coordinates_country_inconsistent()` (see: 5c4e0aa).
+- `{countrycode}` and `{rangeBuilder}` dependencies were
+  removed. Country names now are derived from [Stefan Gabos](https://github.com/stefangabos/world_countries/) repository
+  following the [ISO 3166-1](https://www.iso.org/iso-3166-country-codes.html) standard.
+
+- `{bdc}` wins the Ebbe Nielsen Challenge GBIF 2022 (see links below)!
+  - https://www.gbif.org/news/6J94JrRZtDCPhUZMMiTALq/gridder-and-bdc-share-top-honors-in-2022-gbif-ebbe-nielsen-challenge
+  - https://www.sibbr.gov.br/noticia/gridder-e-bdc-propostas-vencedoras-do-desafio-ebbe-nielsen-2022.html?lang=pt_BR
+  - https://ecoevol.ufg.br/n/160758-ferramenta-biodiversity-data-cleaning-bdc-agraciada-com-o-primeiro-lugar-do-desafio-ebbe-nielsen-2022-do-gbif
+  - http://www.ueg.br/noticia/59726_trabalhos_de_professores_da_ueg_sao_premiados_em_eventos
+  - https://jhortal.com/geiziane-tessarolo-and-colleagues-win-gbifs-ebbe-nielsen-challenge/
+
 # bdc 1.1.2
 
 - Fix database version in `taxadb::td_create` inside the

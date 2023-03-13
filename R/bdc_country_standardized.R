@@ -9,17 +9,16 @@
 #' of each record. Default = "country".
 #'
 #' @details Country names are standardized using an exact matching against a
-#' list of country names in several languages from Wikipedia. If any unmatched
+#' list of country names in several languages from International Organization for Standardization. If any unmatched
 #' names remain,  a fuzzy matching algorithm is used to find potential
 #' candidates for each misspelled countries names.
 #'
 #' @return A data.frame containing two columns: country_suggested (standardized
 #' country names) and country_code (two-letter country codes; more details in
-#' \href{https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2}{Wikipedia}).
+#' \href{https://github.com/stefangabos/world_countries/}{World Countries, International Organization for Standardization}).
 #'
-#' @importFrom dplyr left_join rename
+#' @importFrom dplyr left_join rename mutate if_else
 #' @importFrom readr read_delim
-#' @importFrom stringr str_to_sentence
 #'
 #' @export
 #'
@@ -37,7 +36,7 @@
 bdc_country_standardized <-
   function(data,
            country = "country") {
-    cntr_suggested <- cntr_iso2c <- country_suggested <- NULL
+    cntr_suggested <- cntr_iso2c <- country_suggested <- alpha3 <- english_name <- NULL
 
     if (all(colnames(data) != country)) {
       stop(
@@ -49,23 +48,20 @@ bdc_country_standardized <-
       suppressMessages({
         check_require_cran("rnaturalearth")
         check_require_github("ropensci/rnaturalearthdata")
-        check_require_cran("countrycode")
-        check_require_cran("rangeBuilder")
       })
     })
 
     # load auxiliary data
-    message("Loading auxiliary data: country names from wikipedia\n")
+    message("Loading auxiliary data: country names\n")
     suppressMessages({
       suppressWarnings({
-        wiki_cntr <-
-          system.file("extdata/countries_names/wiki_country_names.txt", package = "bdc") %>%
-          readr::read_delim(delim = "\t") # get country names from Wikipedia
+        cntr_names <-
+          system.file("extdata/countries_names/country_names.txt", package = "bdc") %>%
+          readr::read_delim(delim = "\t") %>% # get country names
+          ## FIXME 2022-10-08: There are two cases as "United States".
+          dplyr::mutate(english_name = dplyr::if_else(alpha3 == "USA", "United States of America", english_name))
       })
     })
-
-    message("Loading auxiliary data: world map and country iso\n")
-    worldmap <- bdc_get_world_map() # get world map and country iso
 
     # standardize the name of countries
     message("Standardizing country names\n")
@@ -73,7 +69,7 @@ bdc_country_standardized <-
       bdc_standardize_country(
         data = data,
         country = country,
-        country_names_db = wiki_cntr
+        country_names_db = cntr_names
       )
 
     cntr <- "cntr_original"
@@ -87,11 +83,7 @@ bdc_country_standardized <-
       dplyr::rename(
         country_suggested = cntr_suggested,
         countryCode = cntr_iso2c
-      ) %>%
-      dplyr::mutate(
-        country_suggested =
-          stringr::str_to_sentence(country_suggested)
-      )
+      ) 
 
     w <- which(data$country != data$country_suggested)
 

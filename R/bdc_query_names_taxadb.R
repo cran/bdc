@@ -202,8 +202,9 @@ bdc_query_names_taxadb <-
                    "iucn")) {
       stop(db, " provided is not a valid name")
     }
-    
-    if (db %in% c("slb", "wd")) {
+    ## NOTE 2023-02-25: This modification is based on latest release of `{taxadb}` 0.2.0.
+    ## CHECK 2023-02-25: https://github.com/ropensci/taxadb/commit/593c7856a603c802762829d60acb2a313ad7a6dd
+    if (db %in% c("slb", "wd", "tpl", "fb", "iucn")) {
       stop(db, " database is momentarily unavailable in taxadb package")
     }
     
@@ -211,40 +212,34 @@ bdc_query_names_taxadb <-
     switch(
       EXPR = db,
       itis = {
-        db_version <- 2022
+        db_version <- "22.12"
       },
       ncbi = {
-        db_version <- 2022
+        db_version <- "22.12"
       },
       col = {
-        db_version <- 2022
+        db_version <- "22.12"
       },
       gbif = {
-        db_version <- 2022
+        db_version <- "22.12"
       },
       iucn = {
         ## FIXME 2022-06-23: taxadb cannot parse the 2022 version yet (taxadb issue 88).
-        db_version <- 2019
+        db_version <- "22.12"
       },
       ott = {
-        db_version <- 2021
+        db_version <- "22.12"
       },
       fb = {
-        db_version <- 2019
+        db_version <- "22.12"
       },
       tpl = {
-        db_version <- 2019
+        db_version <- "22.12"
       }
     )
-    
-    # Create a directory to save the result
-    bdc_create_dir()
-    
-    # FIXME: set a env var for now
-    # REVIEW: https://github.com/ropensci/taxadb/issues/91
-    # Sys.setenv("CONTENTID_REGISTRIES" = "https://hash-archive.carlboettiger.info")
-    # Sys.setenv("TAXADB_DRIVER"="MonetDBLite")
-    
+
+    message("\nQuerying using ", db, " database version ", db_version, "\n")
+
     # Measuring the execution time
     start <- Sys.time()
     
@@ -254,15 +249,12 @@ bdc_query_names_taxadb <-
     
     db_name <- paste0(db_version, "_", "dwc", "_", db)
     
-    if (!has_table(db_name, taxadb::td_connect(bdc_taxadb_dir()))) {
-      taxadb::td_create(
-        provider = db,
-        schema = "dwc",
-        version = db_version,
-        overwrite = FALSE
-      )
-    }
-    
+    taxadb::td_create(
+      provider = db,
+      schema = "dwc",
+      version = db_version
+    )
+
     # Raw taxa names
     raw_sci_name <-
       sci_name %>%
@@ -607,7 +599,7 @@ bdc_query_names_taxadb <-
     # joining  names queried to the original (complete) database
     found_name <-
       dplyr::left_join(raw_sci_name, found_name, by = "original_search")
-    
+
     end <- Sys.time()
     total_time <- round(as.numeric(end - start, units = "mins"), 1)
     

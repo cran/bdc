@@ -25,7 +25,7 @@
 #' @importFrom CoordinateCleaner cc_val cc_sea
 #' @importFrom dplyr mutate filter select left_join as_tibble 
 #' @importFrom rnaturalearth ne_countries
-#' @importFrom sf st_as_sf st_set_crs st_crs st_intersection
+#' @importFrom sf st_as_sf st_set_crs st_crs st_intersection as_Spatial
 #'
 #' @export
 #'
@@ -82,8 +82,10 @@ bdc_country_from_coordinates <-
       dplyr::mutate(decimalLatitude = as.numeric(.data[[lat]]),
                     decimalLongitude = as.numeric(.data[[lon]]))
     
-    worldmap <- rnaturalearth::ne_countries(scale = "large")
-    
+    worldmap <-
+      rnaturalearth::ne_countries(scale = "large", returnclass = "sf") %>%
+      bdc_reword_countries()
+
     data_no_country <-
       data %>%
       dplyr::filter(is.na(country) | country == "")
@@ -110,7 +112,7 @@ bdc_country_from_coordinates <-
             lat = lat,
             verbose = FALSE,
             speedup = TRUE,
-            ref = worldmap
+            ref = sf::as_Spatial(worldmap)
           ) %>%
           sf::st_as_sf(
             .,
@@ -119,9 +121,6 @@ bdc_country_from_coordinates <-
           ) %>%
           sf::st_set_crs(., sf::st_crs(worldmap))
       })
-      
-      worldmap <-
-        sf::st_as_sf(worldmap) %>% dplyr::select(name_long)
       
       # Extract country names from coordinates
       suppressWarnings({

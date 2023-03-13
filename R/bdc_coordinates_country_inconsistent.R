@@ -111,8 +111,8 @@ bdc_coordinates_country_inconsistent <-
         country = country_name,
         scale = "large",
         returnclass = "sf"
-      )
-
+      ) %>%
+      bdc_reword_countries()
 
     # Spatial points
     data_sp <-
@@ -144,13 +144,14 @@ bdc_coordinates_country_inconsistent <-
 
 
     # Points in other countries
-    all_countries <-
+    worldmap <-
       rnaturalearth::ne_countries(returnclass = "sf", scale = "large") %>%
-      dplyr::select(name_long)
+      dplyr::select(name_long) %>%
+      bdc_reword_countries()
 
     # Extract country names from points
     suppressWarnings({
-      ext_country <- sf::st_intersection(data_sp, all_countries)
+      ext_country <- sf::st_intersection(data_sp, worldmap)
     })
     data_sp$geometry <- NULL
     ext_country$geometry <- NULL
@@ -172,7 +173,7 @@ bdc_coordinates_country_inconsistent <-
               (points_in_buf == TRUE & is.na(name_long)) ~ TRUE,
               (points_in_buf == FALSE) ~ FALSE,
               (points_in_buf == TRUE &
-                 name_long != country_name[i]) ~ FALSE,
+                 tolower(name_long) != tolower(country_name[i])) ~ FALSE,
               (points_in_buf == TRUE & name_long == country_name[i]) ~ TRUE
             )
         ) %>% 
@@ -180,8 +181,8 @@ bdc_coordinates_country_inconsistent <-
     }
     rm(flt)
     
-    # Assign TRUE to those lines without country information
-    data_to_join$.coordinates_country_inconsistent[is.na(data_to_join[[country]])] <- TRUE
+    # Assign FALSE to those lines without country information
+    data_to_join$.coordinates_country_inconsistent[is.na(data_to_join[[country]])] <- FALSE
     
     data_to_join <-
       data_to_join %>%
