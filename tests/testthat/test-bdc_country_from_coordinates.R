@@ -1,3 +1,6 @@
+skip_on_ci()
+skip_on_cran()
+
 decimalLongitude <- c(-63.43333, -67.91667, -41.90000, -46.69778, -14.43333)
 decimalLatitude <- c(-17.90000, -14.43333, -13.25000, -13.82444, -67.91667)
 country <- c("", "NA", NA, "Brazil", "")
@@ -11,7 +14,7 @@ test_that("it can return country names", {
     country = "country"
   )
   
-  expect_equal(r$country, c("Bolivia", NA, "Brazil", "Brazil", ""))
+  expect_equal(r$country, c("Bolivia", NA, "Brazil", "Brazil", NA))
   
 })
 

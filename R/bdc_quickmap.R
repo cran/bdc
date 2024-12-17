@@ -40,7 +40,7 @@
 #' )
 #' }
 bdc_quickmap <- function(data, lat = "decimalLatitude", lon = "decimalLongitude", col_to_map = "red", size = 1) {
-  .data <- .coordinates_empty <- .coordinates_outOfRange <- NULL
+  .data <- .coordinates_empty <- .coordinates_outOfRange <- z <- NULL
 
   check_require_cran("ggplot2")
 
@@ -74,15 +74,15 @@ bdc_quickmap <- function(data, lat = "decimalLatitude", lon = "decimalLongitude"
       data_raw <-
         bdc_coordinates_empty(
           data = data,
-          lat = {{ lat }},
-          lon = {{ lon }}
+          lat = lat,
+          lon = lon
         )
 
       data_raw <-
         bdc_coordinates_outOfRange(
           data = data_raw,
-          lat = {{ lat }},
-          lon = {{ lon }}
+          lat = lat,
+          lon = lon
         )
 
       df <-
@@ -99,6 +99,9 @@ bdc_quickmap <- function(data, lat = "decimalLatitude", lon = "decimalLongitude"
 
 
   if (all(col_to_map %in% names(data))) {
+    # lon <- df[, lon] 
+    # lat <- df[, lat] 
+    # col_to_map <- df[, col_to_map]
     our_map <-
       df %>%
       ggplot2::ggplot() +
@@ -121,6 +124,8 @@ bdc_quickmap <- function(data, lat = "decimalLatitude", lon = "decimalLongitude"
       ggplot2::coord_quickmap() +
       ggplot2::scale_color_manual(values = c("red", "blue"))
   } else {
+    # lon <- df[, lon] 
+    # lat <- df[, lat] 
     our_map <-
       df %>%
       ggplot2::ggplot() +
@@ -136,7 +141,7 @@ bdc_quickmap <- function(data, lat = "decimalLatitude", lon = "decimalLongitude"
           x = .data[[lon]],
           y = .data[[lat]]
         ),
-        col = {{ col_to_map }}, # Map the color
+        col = col_to_map, # Map the color
         alpha = 1,
         size = size
       ) +

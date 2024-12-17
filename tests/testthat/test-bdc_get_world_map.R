@@ -1,3 +1,6 @@
+skip_on_ci()
+skip_on_cran()
+
 x <- bdc_get_world_map()
 
 test_that("returning  a polygon data frame", {

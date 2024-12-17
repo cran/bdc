@@ -1,7 +1,8 @@
+skip_on_ci()
+skip_on_cran()
+
 wiki_cntr <- system.file("extdata/countries_names/country_names.txt", package = "bdc") %>%
-  readr::read_delim(delim = "\t") %>%
-  ## FIXME 2022-10-08: There are two cases as "United States".
-  mutate(english_name = if_else(alpha3 == "USA", "United States of America", english_name))
+  readr::read_delim(delim = "\t", show_col_types = FALSE) 
 
 worldmap <- bdc_get_world_map()
 
@@ -17,7 +18,7 @@ x <- bdc_standardize_country(
 test_that("bdc_standardize_country standardize country names", {
   expect_equal(
     x$cntr_suggested,
-    c("Bolivia", "Brazil", "United States of America", "Vietnam")
+    c("Bolivia", "Brazil", "United States of America",   "Vietnam")
   )
 })
 
@@ -34,3 +35,4 @@ test_that("bdc_standardize_country iso", {
     c("BO", "BR", "US", "VN")
   )
 })
+

@@ -1,6 +1,6 @@
 Package: bdc
 Title: Biodiversity Data Cleaning
-Version: 1.1.4
+Version: 1.1.5
 Authors@R: c(
     person("Bruno", "Ribeiro", , "ribeiro.brr@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-7755-6715")),
@@ -37,21 +37,20 @@ License: GPL (>= 3)
 URL: https://brunobrr.github.io/bdc/ (website)
         https://github.com/brunobrr/bdc
 BugReports: https://github.com/brunobrr/bdc/issues
-Imports: CoordinateCleaner, dplyr, DT, foreach, fs, ggplot2, here,
-        magrittr, purrr, qs, readr, rgnparser, rnaturalearth, sf (>=
-        1.0.5), stringdist, stringi, stringr, taxadb (>= 0.1.3),
-        tibble, tidyselect
-Suggests: contentid (>= 0.0.15), covr, cowplot, DBI, doParallel, duckdb
-        (>= 0.3.2), knitr (>= 1.31), maps, markdown, rappdirs, raster,
-        remotes, rlang (>= 1.0.1), rmarkdown, rnaturalearthdata, rvest,
-        sp, testthat (>= 3.0.0), xml2
-VignetteBuilder: knitr
+Imports: CoordinateCleaner, doParallel, dplyr, DT, foreach, fs,
+        ggplot2, here, magrittr, purrr, qs, readr, rgnparser,
+        rnaturalearth, sf (>= 1.0.5), stringdist, stringi, stringr,
+        taxadb (>= 0.1.3), tibble, tidyselect
+Suggests: contentid (>= 0.0.15), covr, cowplot, DBI, duckdb (>= 0.3.2),
+        knitr (>= 1.31), maps, markdown, rappdirs, raster, remotes,
+        rlang (>= 1.0.1), rmarkdown, rnaturalearthdata, sp, rvest,
+        xml2, testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-gb
-RoxygenNote: 7.2.1
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2023-03-13 12:42:38 UTC; ribei
+Packaged: 2024-12-17 17:20:06 UTC; brunoribeiro
 Author: Bruno Ribeiro [aut, cre] (<https://orcid.org/0000-0002-7755-6715>),
   Santiago Velazco [aut] (<https://orcid.org/0000-0002-7527-0967>),
   Karlo Guidoni-Martins [aut] (<https://orcid.org/0000-0002-8458-8467>),
@@ -61,4 +60,4 @@ Author: Bruno Ribeiro [aut, cre] (<https://orcid.org/0000-0002-7755-6715>),
   Rafael Loyola [ctb] (<https://orcid.org/0000-0001-5323-2735>)
 Maintainer: Bruno Ribeiro <ribeiro.brr@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-03-13 13:50:05 UTC
+Date/Publication: 2024-12-17 17:40:02 UTC

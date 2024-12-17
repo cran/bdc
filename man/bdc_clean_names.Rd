@@ -43,9 +43,7 @@ from taxon name.
 \details{
 Terms denoting uncertainty or provisional status of taxonomic
 identification as well as infraspecific terms were obtained from Sigoviniet
-al. (2016; doi: 10.1111/2041-210X.12594). More details about the names
-parse process can be found in
-\href{https://github.com/gnames/gnparser}{gnparser}.
+al. (2016; doi: 10.1111/2041-210X.12594).
 }
 \examples{
 \dontrun{
@@ -58,6 +56,7 @@ scientificName <- c(
 
 bdc_clean_names(scientificName, save_outputs = FALSE)
 }
+
 }
 \seealso{
 Other taxonomy: 
